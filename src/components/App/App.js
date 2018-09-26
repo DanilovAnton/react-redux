@@ -1,3 +1,9 @@
-import React from 'react'
+import React from "react";
 
-export default () => <p>Homework app</p>
+export default () => (
+  <div className="App">
+    <p className="description">
+      Миру-мир, студентам - beer.
+    </p>
+  </div>
+)
