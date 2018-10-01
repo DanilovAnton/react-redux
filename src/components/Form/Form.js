@@ -2,44 +2,6 @@ import React, { Component } from 'react';
 import './Form.css';
 import bondImg from './assets/bond_approve.jpg';
 
-const getTextErrorsByName = name => {
-  switch (name) {
-    case 'firstname':
-      return {
-        error1: 'Нужно указать имя',
-        error2: 'Имя указано не верно'
-      };
-    case 'lastname':
-      return {
-        error1: 'Нужно указать фамилию',
-        error2: 'Фамилия указана не верно'
-      };
-    case 'password':
-      return {
-        error1: 'Нужно указать пароль',
-        error2: 'Пароль указан не верно'
-      };
-    default:
-      return {
-        error1: '',
-        error2: ''
-      };
-  }
-};
-
-const getTemplateByName = name => {
-  switch (name) {
-    case 'firstname':
-      return 'james';
-    case 'lastname':
-      return 'bond';
-    case 'password':
-      return '007';
-    default:
-      return null;
-  }
-};
-
 const Field = props => {
   const { label, name, error = '', value, onChange } = props;
   return (
@@ -66,47 +28,31 @@ class Form extends Component {
     super(props);
 
     this.state = {
-      values: {
-        firstname: '',
-        lastname: '',
-        password: ''
-      },
-
-      errors: {
-        firstname: '',
-        lastname: '',
-        password: ''
-      },
-
+      values: ParamsForm.defaultParamsForm(),
+      errors: ParamsForm.defaultParamsForm(),
       isSubmited: false
     };
   }
 
   handleChangeInput = ({ target: { name, value } }) => {
     const { values } = this.state;
-    this.setState({
-      values: { ...values, [name]: value },
-      errors: {
-        firstname: '',
-        lastname: '',
-        password: ''
-      }
-    });
+    this.setState({ values: { ...values, [name]: value } });
+    this.clearErrors();
+  };
+
+  clearErrors = () => {
+    this.setState({ errors: ParamsForm.defaultParamsForm() });
   };
 
   fillErrors = () => {
-    let newErrors = {
-      firstname: '',
-      lastname: '',
-      password: ''
-    };
+    let newErrors = ParamsForm.defaultParamsForm();
     const { values } = this.state;
     for (let key in values) {
       if (values[key] === '') {
-        newErrors = { ...newErrors, [key]: getTextErrorsByName(key).error1 };
+        newErrors = { ...newErrors, [key]: getErrorsTextByName(key).error1 };
       } else {
         if (values[key].toLowerCase() !== getTemplateByName(key)) {
-          newErrors = { ...newErrors, [key]: getTextErrorsByName(key).error2 };
+          newErrors = { ...newErrors, [key]: getErrorsTextByName(key).error2 };
         }
       }
     }
@@ -115,9 +61,7 @@ class Form extends Component {
 
   isValidate = () => {
     let errors = this.fillErrors();
-    this.setState(state => ({
-      errors
-    }));
+    this.setState({errors});
     return (
       errors.firstname === '' &&
       errors.lastname === '' &&
@@ -179,6 +123,57 @@ class Form extends Component {
       </div>
     );
   }
+}
+
+const getErrorsTextByName = name => {
+  switch (name) {
+    case 'firstname':
+      return {
+        error1: 'Нужно указать имя',
+        error2: 'Имя указано не верно'
+      };
+    case 'lastname':
+      return {
+        error1: 'Нужно указать фамилию',
+        error2: 'Фамилия указана не верно'
+      };
+    case 'password':
+      return {
+        error1: 'Нужно указать пароль',
+        error2: 'Пароль указан не верно'
+      };
+    default:
+      return {
+        error1: '',
+        error2: ''
+      };
+  }
+};
+
+const getTemplateByName = name => {
+  switch (name) {
+    case 'firstname':
+      return 'james';
+    case 'lastname':
+      return 'bond';
+    case 'password':
+      return '007';
+    default:
+      return null;
+  }
+};
+
+class ParamsForm {
+    constructor(firstname, lastname, password){
+        this.firstname = firstname
+        this.lastname = lastname
+        this.password = password
+    }
+    
+    static defaultParamsForm() {
+        return new ParamsForm('', '', '')
+    }
+    
 }
 
 export default Form;
