@@ -14,25 +14,89 @@ class Todo extends PureComponent {
     return biggest + 1;
   }
 
-  handleChange = event => {};
+  handleChange = event => {
+    this.setState({ inputValue: event.target.value });
+  };
 
-  createNewRecordByEnter = event => {};
+  createNewRecordByEnter = event => {
+    if (event.keyCode === 13) {
+      this.createNewRecord();
+    }
+  };
 
-  toggleRecordComplete = event => {};
+  toggleRecordComplete = event => {
+    const { toggle } = this.props;
+    const elementId = event.target.dataset.id;
+    toggle(elementId);
+  };
 
-  createNewRecord = () => {};
+  createNewRecord = () => {
+    const { inputValue } = this.state;
+    const { saveData, savedData } = this.props;
+    if (inputValue.length) {
+      saveData([
+        { id: this.getId(), isComplete: false, text: inputValue },
+        ...savedData
+      ]);
+      this.setState({ inputValue: '' });
+    }
+  };
 
   render() {
-    return;
+    const { inputValue } = this.state;
+    const { savedData } = this.props;
+    return (
+      <Card title="Список дел">
+        <div className="todo t-todo-list">
+          <div className="todo-item todo-item-new">
+            <input
+              type="text"
+              className="todo-input t-input"
+              value={inputValue}
+              placeholder="Введите значение"
+              onChange={this.handleChange}
+              onKeyUp={this.createNewRecordByEnter}
+            />
+            <span className="plus t-plus" onClick={this.createNewRecord}>
+              +
+            </span>
+          </div>
+          {savedData.length
+            ? this.renderRecord(savedData)
+            : this.renderEmptyRecord()}
+        </div>
+      </Card>
+    );
   }
 
   renderEmptyRecord() {
-    return;
+    return null;
   }
 
   renderRecord = record => {
-    return;
+    return record.map(({ id, text, isComplete }) => (
+      <Item
+        key={id}
+        id={id}
+        text={text}
+        isComplete={isComplete}
+        toggleRecordComplete={this.toggleRecordComplete}
+      />
+    ));
   };
 }
+
+const Item = ({ id, text, isComplete, toggleRecordComplete }) => (
+  <div className="todo-item t-todo">
+    <p className="todo-item__text">{text}</p>
+    <span
+      className="todo-item__flag t-todo-complete-flag"
+      data-id={id}
+      onClick={toggleRecordComplete}
+    >
+      [{isComplete === true ? 'x' : ' '}]
+    </span>
+  </div>
+);
 
 export default withLocalstorage('todo-app', [])(Todo);
