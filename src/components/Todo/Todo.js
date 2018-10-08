@@ -25,9 +25,18 @@ class Todo extends PureComponent {
   };
 
   toggleRecordComplete = event => {
-    const { toggle } = this.props;
+    const { savedData, saveData } = this.props;
     const elementId = event.target.dataset.id;
-    toggle(elementId);
+    const storage = savedData.map(el => {
+      if (el.id === Number(elementId)) {
+        if (el.id === Number(elementId)) {
+          return { ...el, isComplete: !el.isComplete };
+        }
+      }
+      return el;
+    });
+
+    saveData(storage);
   };
 
   createNewRecord = () => {
@@ -86,17 +95,22 @@ class Todo extends PureComponent {
   };
 }
 
-const Item = ({ id, text, isComplete, toggleRecordComplete }) => (
-  <div className="todo-item t-todo">
-    <p className="todo-item__text">{text}</p>
-    <span
-      className="todo-item__flag t-todo-complete-flag"
-      data-id={id}
-      onClick={toggleRecordComplete}
-    >
-      [{isComplete === true ? 'x' : ' '}]
-    </span>
-  </div>
-);
+class Item extends PureComponent {
+  render() {
+    const { id, text, toggleRecordComplete, isComplete } = this.props;
+    return (
+      <div className="todo-item t-todo">
+        <p className="todo-item__text">{text}</p>
+        <span
+          className="todo-item__flag t-todo-complete-flag"
+          data-id={id}
+          onClick={toggleRecordComplete}
+        >
+          [{isComplete === true ? 'x' : ' '}]
+        </span>
+      </div>
+    );
+  }
+}
 
 export default withLocalstorage('todo-app', [])(Todo);

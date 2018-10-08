@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { load, save } from '../../localstorage';
 
 const withLocalstorage = (storage, data) => WrappedComponent => {
-  return class extends Component {
+  class WithStorage extends Component {
     static displayName = 'withLocalStorage';
     constructor(props) {
       super(props);
@@ -15,35 +15,27 @@ const withLocalstorage = (storage, data) => WrappedComponent => {
       return load(storage);
     };
 
-    // handleToggle = id => {
-    //   const store = this.loadFromLocalstorage();
-    //   const newStorage = store.map(el => {
-    //     if (el.id === Number(id)) {
-    //       return { ...el, isComplete: !el.isComplete };
-    //     }
-    //     return el;
-    //   });
-    //
-    //   save(storage, newStorage);
-    //   this.forceUpdate();
-    // };
-
     handleSaveData = data => {
       save(storage, data);
       this.forceUpdate();
     };
 
     render() {
+      const { forwardedRef, ...rest } = this.props;
       return (
         <WrappedComponent
-          {...this.props}
+          {...rest}
           savedData={this.loadFromLocalstorage()}
           saveData={this.handleSaveData}
-          // toggle={this.handleToggle}
+          ref={forwardedRef}
         />
       );
     }
-  };
+  }
+
+  return React.forwardRef((props, ref) => (
+    <WithStorage {...props} forwardedRef={ref} />
+  ));
 };
 
 export default withLocalstorage;
